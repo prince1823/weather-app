@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Weather App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+            margin-top: 20px;
+        }
+
+        form {
+            margin: 20px auto;
+            padding: 10px;
+            background-color: #d8a8a8;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+        }
+
+        label {
+            font-size: 1.2em;
+            color: #555;
+        }
+
+        input[type="text"] {
+            padding: 10px;
+            font-size: 1em;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-top: 10px;
+            width: calc(100% - 22px);
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 1em;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .weather-info {
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #a2d8e6;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            text-align: center;
+        }
+
+        .weather-info h2 {
+            margin-top: 0;
+            color: #333;
+        }
+
+        .weather-info p {
+            font-size: 1.1em;
+            color: #555;
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Weather App</h1>
+    <form id="weather-form">
+        <label for="city">Enter city name:</label>
+        <input type="text" id="city" name="city" required />
+        <button type="submit">Get Weather</button>
+    </form>
+    <div class="weather-info" id="weather-info"></div>
+
+    <script>
+        document.getElementById('weather-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const city = document.getElementById('city').value.trim();
+            if (city) {
+                getWeatherData(city);
+            } else {
+                document.getElementById('weather-info').innerHTML = '<p>Please enter a city name.</p>';
+            }
+        });
+
+        function getWeatherData(city) {
+            const apiKey = 'ebcd1a7884ea0349649f4b1c1bd32096';
+            const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    const weatherInfo = document.getElementById('weather-info');
+                    if (data.cod === 200) {
+                        weatherInfo.innerHTML = `
+                            <h2>Weather in ${data.name}</h2>
+                            <p>Temperature: ${data.main.temp} °C</p>
+                            <p>Weather: ${data.weather[0].description}</p>
+                            <p>Humidity: ${data.main.humidity}%</p>
+                            <p>Wind Speed: ${data.wind.speed} m/s</p>
+                        `;
+                    } else if (data.cod === '404') {
+                        weatherInfo.innerHTML = '<p>City not found.</p>';
+                    } else {
+                        weatherInfo.innerHTML = '<p>Something went wrong. Please try again later.</p>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching weather data:', error);
+                    document.getElementById('weather-info').innerHTML = '<p>Error fetching weather data. Please try again later.</p>';
+                });
+        }
+    </script>
+</body>
+</html>
